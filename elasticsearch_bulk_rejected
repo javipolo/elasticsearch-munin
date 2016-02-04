@@ -1,0 +1,22 @@
+#!/bin/bash
+
+CLUSTER_NAME=$(curl -s http://localhost:9200/_cluster/health?pretty|grep cluster_name|cut -d \" -f 4)
+LOGFILE=/var/log/elasticsearch/$CLUSTER_NAME.log
+
+VALUE=$(cat $LOGFILE|grep rejected|wc -l)
+
+case $1 in
+	config)
+		cat << EOF
+graph_title elasticsearch bulk indexing
+graph_category elasticsearch
+rejected.label count
+rejected.type GAUGE
+EOF
+	;;
+	*)
+		echo "rejected.value $VALUE"
+	;;
+esac
+	
+
